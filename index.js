@@ -1,26 +1,37 @@
-// Store URL for API
-const BASE_URL = 'http://localhost:5000/api';
+// Dummy list of registered students
+const registeredStudents = [
+  { id: "TUT202301", name: "Alice" },
+  { id: "TUT202302", name: "Bob" },
+  { id: "TUT202303", name: "Carol" },
+  { id: "TUT202304", name: "Dave" },
+  { id: "TUT202305", name: "Eve" },
+  { id: "TUT202306", name: "Frank" },
+  { id: "TUT202307", name: "Grace" },
+  { id: "TUT202308", name: "Hank" },
+  { id: "TUT202309", name: "Ivy" },
+  { id: "TUT202310", name: "Jack" },
+];
 
 // Register Voter
 function registerVoter() {
   const name = document.getElementById('voter-name').value;
   const id = document.getElementById('voter-id').value;
 
-  if (name && id) {
-    // Store voter info in localStorage
+  // Check if student is in registered list
+  const student = registeredStudents.find(s => s.id === id && s.name === name);
+  if (student) {
     localStorage.setItem('voterName', name);
     localStorage.setItem('voterID', id);
     document.getElementById('registration-message').textContent = "Registration successful!";
     
-    // Show login section and hide registration
     document.getElementById('registration-section').style.display = 'none';
     document.getElementById('login-section').style.display = 'block';
   } else {
-    document.getElementById('registration-message').textContent = "Please fill in all details.";
+    document.getElementById('registration-message').textContent = "Not a registered student.";
   }
 }
 
-// Login Voter to Vote
+// Login Voter
 function loginVoter() {
   const enteredID = document.getElementById('login-id').value;
   const storedID = localStorage.getItem('voterID');
@@ -39,38 +50,22 @@ function submitVote() {
   const candidate = document.getElementById('candidate-select').value;
   const voterID = localStorage.getItem('voterID');
 
-  if (!voterID) {
-    document.getElementById('vote-message').textContent = "Please register or log in to vote.";
-    return;
-  }
-
-  if (!localStorage.getItem(`votedFor_${candidate}`)) {
-    fetch(`${BASE_URL}/votes/submit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ voterID, candidate })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then(data => {
-      document.getElementById('vote-message').textContent = data.message || "Vote submitted successfully!";
-      localStorage.setItem(`votedFor_${candidate}`, true); // Mark candidate as voted
-    })
-    .catch(error => {
-      document.getElementById('vote-message').textContent = "Voting failed: " + error.message;
-    });
-  } else {
-    document.getElementById('vote-message').textContent = "You can only vote once per candidate.";
-  }
+  fetch('http://localhost:5000/api/votes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voterID, candidate })
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('vote-message').textContent = data.message;
+    localStorage.setItem(`votedFor_${candidate}`, true); // Mark as voted
+  })
+  .catch(() => {
+    document.getElementById('vote-message').textContent = "Voting failed.";
+  });
 }
 
-// Redirect to Admin Login
+// Redirect to Admin
 function redirectToAdmin() {
   window.location.href = "admin-login.html";
 }
