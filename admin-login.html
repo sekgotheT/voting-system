@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Create Login Section -->
+  <div id="create-login-section">
+    <h2>Create Admin Login</h2>
+    <input type="text" id="new-username" placeholder="Create Username" required>
+    <input type="password" id="new-password" placeholder="Create Password" required>
+    <button onclick="createLogin()">Create Login</button>
+  </div>
+
+  <!-- Login Section -->
+  <div id="login-section" style="display: none;">
+    <h2>Enter Your Login</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+    <p id="error-message" style="color: red; display: none;">Invalid login. Please try again.</p>
+  </div>
+
+  <script>
+    function createLogin() {
+      // Retrieve new username and password
+      const newUsername = document.getElementById("new-username").value;
+      const newPassword = document.getElementById("new-password").value;
+
+      // Store the new credentials locally (for demonstration only; not secure for production)
+      localStorage.setItem("adminUsername", newUsername);
+      localStorage.setItem("adminPassword", newPassword);
+
+      // Hide the create login section and show the login section
+      document.getElementById("create-login-section").style.display = "none";
+      document.getElementById("login-section").style.display = "block";
+    }
+
+    function login() {
+      // Retrieve entered username and password
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // Retrieve stored admin credentials
+      const adminUsername = localStorage.getItem("adminUsername");
+      const adminPassword = localStorage.getItem("adminPassword");
+
+      // Validate login credentials
+      if (username === adminUsername && password === adminPassword) {
+        // Store login status
+        localStorage.setItem("isAdminLoggedIn", true);
+        window.location.href = "admin-dashboard.html"; // Redirect to admin dashboard
+      } else {
+        // Show error message
+        document.getElementById("error-message").style.display = "block";
+      }
+    }
+
+    function logout() {
+      // Remove login status and credentials
+      localStorage.removeItem("isAdminLoggedIn");
+      localStorage.removeItem("adminUsername");
+      localStorage.removeItem("adminPassword");
+      window.location.href = "login.html"; // Redirect to login page
+    }
+  </script>
+
+</body>
+</html>

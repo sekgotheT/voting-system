@@ -1,0 +1,95 @@
+/* General Body Styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+/* Heading Styling */
+h1 {
+  color: #2c3e50;
+  font-size: 2.2em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Form Container Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 350px;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input Fields, Select Dropdown, and Button Styling */
+input, select, button {
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input Field Focus Effect */
+input:focus, select:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+  outline: none;
+}
+
+/* Button Styling */
+button {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Button Hover Effect */
+button:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Active Effect */
+button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) inset;
+}
+
+/* Statistics Section Styling */
+#stats {
+  margin-top: 20px;
+  max-width: 600px;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1em;
+  color: #333;
+  overflow: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  form, #stats {
+    width: 90%;
+    padding: 15px;
+  }
+}
