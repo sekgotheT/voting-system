@@ -1,73 +1,85 @@
 const BASE_URL = 'http://localhost:5000/api';
 
-// --- User Registration ---
-document.getElementById('register-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = document.getElementById('register-name').value;
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
+// --- Registration Confirmation ---
+document.getElementById('register-button').addEventListener('click', async () => {
+  const name = document.getElementById('voter-name').value;
+  const id = document.getElementById('voter-id').value;
 
   try {
-    const res = await fetch(`${BASE_URL}/users/register`, {
+    const res = await fetch(`${BASE_URL}/auth/confirm-registration`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, id })
     });
     const data = await res.json();
-    document.getElementById('register-message').textContent = data.message;
-    if (data.success) {
-      document.getElementById('register-section').style.display = 'none';
+
+    if (res.ok && data.success) {
+      localStorage.setItem('voterID', id); // Store voter ID
+      document.getElementById('registration-message').textContent = 'Registration confirmed, proceed to login!';
+      document.getElementById('Confirmation of registration-section').style.display = 'none';
       document.getElementById('login-section').style.display = 'block';
+    } else {
+      document.getElementById('registration-message').textContent = data.message || 'Registration failed.';
     }
   } catch (err) {
-    document.getElementById('register-message').textContent = 'Registration failed.';
+    console.error('Registration Error:', err);
+    document.getElementById('registration-message').textContent = 'Registration failed.';
   }
 });
 
-// --- User Login ---
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
+// --- Login Confirmation ---
+document.getElementById('login-button').addEventListener('click', async () => {
+  const id = document.getElementById('login-id').value;
+  const storedID = localStorage.getItem('voterID');
 
-  try {
-    const res = await fetch(`${BASE_URL}/users/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('token', data.token);
-      document.getElementById('login-section').style.display = 'none';
-      document.getElementById('vote-section').style.display = 'block';
-    } else {
-      document.getElementById('login-message').textContent = data.message;
-    }
-  } catch (err) {
-    document.getElementById('login-message').textContent = 'Login failed.';
+  if (id === storedID) {
+    document.getElementById('login-message').textContent = 'Login successful, proceed to vote!';
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('vote-section').style.display = 'block';
+  } else {
+    document.getElementById('login-message').textContent = 'Invalid ID. Please register first.';
   }
 });
 
 // --- Vote Submission ---
-document.getElementById('vote-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const candidateID = document.getElementById('candidate-select').value;
-  const token = localStorage.getItem('token');
+document.getElementById('vote-button').addEventListener('click', async () => {
+  const candidate = document.getElementById('candidate-select').value;
+  const voterID = localStorage.getItem('voterID');
 
   try {
     const res = await fetch(`${BASE_URL}/votes/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${voterID}`
       },
-      body: JSON.stringify({ candidateID })
+      body: JSON.stringify({ candidate })
     });
     const data = await res.json();
-    document.getElementById('vote-message').textContent = data.message;
-    document.getElementById('vote-form').style.display = 'none';
+
+    if (res.ok && data.success) {
+      document.getElementById('vote-message').textContent = 'Vote recorded successfully!';
+      document.getElementById('vote-button').disabled = true; // Disable voting after successful submission
+      localStorage.setItem(`votedFor_${voterID}`, true); // Mark as voted
+    } else {
+      document.getElementById('vote-message').textContent = data.message || 'Voting failed.';
+    }
   } catch (err) {
+    console.error('Voting Error:', err);
     document.getElementById('vote-message').textContent = 'Voting failed.';
   }
 });
+
+// --- Check if Already Voted ---
+function checkIfVoted() {
+  const voterID = localStorage.getItem('voterID');
+  if (localStorage.getItem(`votedFor_${voterID}`)) {
+    document.getElementById('vote-message').textContent = 'Student has already voted.';
+    document.getElementById('vote-button').disabled = true; // Disable voting button if already voted
+  }
+}
+
+// --- Initialize on Page Load ---
+window.onload = () => {
+  checkIfVoted();
+};
