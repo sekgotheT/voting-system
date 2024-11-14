@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const path = require('path');  // Added for serving static files
+const path = require('path'); // Import path module
 
 dotenv.config();
 
@@ -11,8 +11,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the root directory
+app.use(express.static(path.join(__dirname))); // Serving all static files from the root directory
 
 // Import Routes
 const authRoutes = require('./routes/auth');
