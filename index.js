@@ -12,8 +12,8 @@ const registeredStudents = [
   { id: "TUT202310", name: "Jack" },
 ];
 
-// Register Voter
-function registerVoter() {
+// Confirm you Registration details to Vote
+function confirmregistrationtoVote() {
   const name = document.getElementById('voter-name').value;
   const id = document.getElementById('voter-id').value;
 
@@ -22,7 +22,7 @@ function registerVoter() {
   if (student) {
     localStorage.setItem('voterName', name);
     localStorage.setItem('voterID', id);
-    document.getElementById('registration-message').textContent = "Registration successful!";
+    document.getElementById('registration-message').textContent = "Registration confirmed , you can vote!";
     
     document.getElementById('registration-section').style.display = 'none';
     document.getElementById('login-section').style.display = 'block';
@@ -31,13 +31,13 @@ function registerVoter() {
   }
 }
 
-// Login Voter
+// Confirm you registration ID to Vote
 function loginVoter() {
   const enteredID = document.getElementById('login-id').value;
   const storedID = localStorage.getItem('voterID');
 
   if (enteredID === storedID) {
-    document.getElementById('login-message').textContent = "Login successful!";
+    document.getElementById('login-message').textContent = "confirmation successful,you can vote.!";
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('vote-section').style.display = 'block';
   } else {
