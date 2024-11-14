@@ -11,7 +11,7 @@
 
   <!-- Registration Section -->
   <div id="registration-section">
-    <h2>Register to Vote</h2>
+    <h2> confirm your Registration details to Vote</h2>
     <input type="text" id="voter-name" placeholder="Enter Name" required>
     <input type="text" id="voter-id" placeholder="Enter ID Number" required>
     <button onclick="registerVoter()">Register</button>
@@ -20,7 +20,7 @@
 
   <!-- Login Section for Registered Voters -->
   <div id="login-section" style="display: none;">
-    <h2>Login to Vote</h2>
+    <h2>enter your confirmed ID to Vote</h2>
     <input type="text" id="login-id" placeholder="Enter Registered ID Number" required>
     <button onclick="loginVoter()">Login</button>
     <p id="login-message" style="color: red;"></p>
@@ -28,7 +28,7 @@
 
   <!-- Voting Section -->
   <div id="vote-section" style="display: none;">
-    <h2>Vote for Your Preferred Candidate</h2>
+    <h2>Vote for Your Preferred party</h2>
     <select id="candidate-select">
       <option value="EFFSC">EFF Student Command (EFFSC)</option>
       <option value="Sasco">South African Students Congress (Sasco)</option>
@@ -46,6 +46,5 @@
   <button onclick="window.location.href='admin-login.html'">Admin Login</button>
 
   <script src="index.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
