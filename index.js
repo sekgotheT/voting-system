@@ -50,7 +50,7 @@ function loginVoter() {
   }
 }
 
-// Step 3: Submit Vote
+// Submit Vote
 function submitVote() {
   const candidate = document.getElementById('candidate-select').value;
   const voterID = localStorage.getItem('voterID');
@@ -67,13 +67,52 @@ function submitVote() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ voterID, candidate })
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    return response.json();
+  })
   .then(data => {
     // Mark as voted and show confirmation message
     localStorage.setItem(`hasVoted_${voterID}`, true); // Mark this voter as having voted
     document.getElementById('vote-message').textContent = data.message || "Your vote has been recorded. Thank you!";
   })
-  .catch(() => {
+  .catch(error => {
+    console.error("Voting failed:", error); // Log error to console for debugging
+    document.getElementById('vote-message').textContent = "Voting failed. Please try again.";
+  });
+}
+// Submit Vote
+function submitVote() {
+  const candidate = document.getElementById('candidate-select').value;
+  const voterID = localStorage.getItem('voterID');
+
+  // Check if the student has already voted
+  if (localStorage.getItem(`hasVoted_${voterID}`)) {
+    document.getElementById('vote-message').textContent = "You have already voted and cannot vote again.";
+    return;
+  }
+
+  // Proceed with voting if not already voted
+  fetch('http://localhost:5000/api/votes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voterID, candidate })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Mark as voted and show confirmation message
+    localStorage.setItem(`hasVoted_${voterID}`, true); // Mark this voter as having voted
+    document.getElementById('vote-message').textContent = data.message || "Your vote has been recorded. Thank you!";
+  })
+  .catch(error => {
+    console.error("Voting failed:", error); // Log error to console for debugging
     document.getElementById('vote-message').textContent = "Voting failed. Please try again.";
   });
 }
