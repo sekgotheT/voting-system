@@ -46,5 +46,6 @@
   <button onclick="redirectToAdmin()">Admin Login</button>
 
   <script src="index.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
