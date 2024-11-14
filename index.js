@@ -1,51 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voting System</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <h1>Voting System</h1>
+// Dummy list of registered students
+const registeredStudents = [
+  { id: "TUT202301", name: "Alice" },
+  { id: "TUT202302", name: "Bob" },
+  { id: "TUT202303", name: "Carol" },
+  { id: "TUT202304", name: "Dave" },
+  { id: "TUT202305", name: "Eve" },
+  { id: "TUT202306", name: "Frank" },
+  { id: "TUT202307", name: "Grace" },
+  { id: "TUT202308", name: "Hank" },
+  { id: "TUT202309", name: "Ivy" },
+  { id: "TUT202310", name: "Jack" },
+];
 
-  <!-- Registration Confirmation Section -->
-  <div id="registration-section">
-    <h2>Confirm Your Registration Details to Vote</h2>
-    <input type="text" id="voter-name" placeholder="Enter Name" required>
-    <input type="text" id="voter-id" placeholder="Enter ID Number" required>
-    <button onclick="confirmRegistration()">Confirm</button>
-    <p id="registration-message" style="color: green;"></p>
-  </div>
+// Step 1: Confirm Registration Details
+function confirmRegistration() {
+  const name = document.getElementById('voter-name').value;
+  const id = document.getElementById('voter-id').value;
 
-  <!-- ID Confirmation Section -->
-  <div id="login-section" style="display: none;">
-    <h2>Enter Your Confirmed ID to Vote</h2>
-    <input type="text" id="login-id" placeholder="Enter Registered ID Number" required>
-    <button onclick="loginVoter()">Confirm</button>
-    <p id="login-message" style="color: red;"></p>
-  </div>
+  // Check if student is in the registered list
+  const student = registeredStudents.find(s => s.id === id && s.name === name);
+  if (student) {
+    localStorage.setItem('voterName', name);
+    localStorage.setItem('voterID', id);
+    document.getElementById('registration-message').textContent = "Registration confirmed, you can proceed.";
+    
+    document.getElementById('registration-section').style.display = 'none';
+    document.getElementById('login-section').style.display = 'block';
+  } else {
+    document.getElementById('registration-message').textContent = "Not a registered student.";
+  }
+}
 
-  <!-- Voting Section -->
-  <div id="vote-section" style="display: none;">
-    <h2>Vote for Your Preferred Party</h2>
-    <select id="candidate-select">
-      <option value="EFFSC">EFF Student Command (EFFSC)</option>
-      <option value="Sasco">South African Students Congress (Sasco)</option>
-      <option value="Sadesmo">South African Democratic Student Movement (Sadesmo)</option>
-      <option value="DASO">Democratic Alliance Student Organization (DASO)</option>
-      <option value="ANCYL">ANC Youth League (ANCYL)</option>
-      <option value="Umkhonto">Umkhonto Wesizwe Youth League</option>
-      <option value="RiseMzansi">Rise Mzansi</option>
-    </select>
-    <button onclick="submitVote()">Vote</button>
-    <p id="vote-message"></p>
-  </div>
+// Step 2: Confirm ID Again to Vote
+function loginVoter() {
+  const enteredID = document.getElementById('login-id').value;
+  const storedID = localStorage.getItem('voterID');
 
-  <!-- Admin Redirect Button -->
-  <button onclick="redirectToAdmin()">Admin Login</button>
+  if (enteredID === storedID) {
+    const hasVoted = localStorage.getItem(`hasVoted_${storedID}`);
+    if (hasVoted) {
+      document.getElementById('login-message').textContent = "You have already voted and cannot vote again.";
+    } else {
+      document.getElementById('login-message').textContent = "Confirmation successful, you can vote!";
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('vote-section').style.display = 'block';
+    }
+  } else {
+    document.getElementById('login-message').textContent = "Invalid ID. Please register first.";
+  }
+}
 
-  <script src="index.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+// Step 3: Submit Vote
+function submitVote() {
+  const candidate = document.getElementById('candidate-select').value;
+  const voterID = localStorage.getItem('voterID');
+
+  // Check if the student has already voted
+  if (localStorage.getItem(`hasVoted_${voterID}`)) {
+    document.getElementById('vote-message').textContent = "You have already voted and cannot vote again.";
+    return;
+  }
+
+  // Proceed with voting if not already voted
+  fetch('http://localhost:5000/api/votes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voterID, candidate })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Mark as voted and show confirmation message
+    localStorage.setItem(`hasVoted_${voterID}`, true); // Mark this voter as having voted
+    document.getElementById('vote-message').textContent = data.message || "Your vote has been recorded. Thank you!";
+  })
+  .catch(() => {
+    document.getElementById('vote-message').textContent = "Voting failed. Please try again.";
+  });
+}
+
+// Redirect to Admin Page
+function redirectToAdmin() {
+  window.location.href = "admin-login.html";
+}
